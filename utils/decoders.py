@@ -11,20 +11,22 @@ class DecoderBase():
         into characters.
         prob -> shape (e.g.) [32, 650, 29]
         """
-        max_ids = torch.argmax(prob, dim=-1) # [32, 650]
-        out = []
-        for ids in max_ids:
-            values = []
-            for i, value in enumerate(ids):
+        prob = torch.transpose(prob, 0, 1)
+        arg_maxes = torch.argmax(prob, dim=-1) # [32, 650]
+        decodes = []
+
+        for i, args in enumerate(arg_maxes):
+            decode = []
+            for j, index in enumerate(args):
                  # ignore blank id
-                if value == self.blank_id:
+                if index == self.blank_id:
                     continue
                 # avoid repetitions
-                if i != 0 and value == ids[i-1]:
+                if j != 0 and index == args[i-1]:
                     continue
-                values.append(value.item())
-            out.append(tokenizer.int_to_text(values))
-        return out
+                decode.append(index.item())
+            decodes.append(tokenizer.int_to_text(decode))
+        return decodes
 
     
     def decode_labels(self, indices, len_indices, tokenizer):
