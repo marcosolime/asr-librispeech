@@ -1,22 +1,27 @@
 import torch
 import torch.nn as nn
-from models.blocks import CNNLayerNorm, ResidualCNN, BiGRU, Classifier
+from models.blocks import LayerNorm, ResNet, ResNetInv, BiGRU, Classifier
 
-######### DEEP SPEECH 2 #########
+"""
+Deep Speech Base
+- 1st stage: stack of residual CNNs
+- 2nd stage: stack of recurrent networks (BiGRU)
+- classifier: fully connected layer (2 layers)
+"""
 
-class DeepSpeech(nn.Module):
+class DeepSpeechBase(nn.Module):
     
-    def __init__(self, n_conv2d, n_rnns, rnn_dim, n_class, n_features, stride=2, drop_rate=0.1):
-        super(DeepSpeech, self).__init__()
-        n_features = n_features // 2
+    def __init__(self, n_conv2d, n_rnns, rnn_dim, n_features, n_class, stride_time=2, stride_freq=2, drop_rate=0.2):
+        super(DeepSpeechBase, self).__init__()
+        n_features = n_features // stride_freq
 
         # init conv2d layer
-        self.init_cnn = nn.Conv2d(1, 32, 3, stride=stride, padding=1)
+        self.init_cnn = nn.Conv2d(1, 32, 3, stride=stride_time, padding=1)
 
         # residual cnns layers
         self.res_cnn_layers = nn.Sequential(
-            *[ResidualCNN(32, 32, kernel_size=3, stride=1, drop_rate=drop_rate, n_features=n_features)
-            for _ in range(n_conv2d)]
+            *[ResNetInv(32, 32, n_features=n_features, kernel=3, stride=1, drop_rate=drop_rate) 
+              for _ in range(n_conv2d)]
         )
 
         # linear layer adapter
@@ -24,11 +29,11 @@ class DeepSpeech(nn.Module):
 
         # bi-rnn layers
         self.bi_rnn_layers = nn.Sequential(
-            *[BiGRU(input_size=rnn_dim if l==0 else rnn_dim*2, 
+            *[BiGRU(rnn_dim=rnn_dim if layer==0 else rnn_dim*2, 
                     hidden_size=rnn_dim, 
                     drop_rate=drop_rate, 
                     batch_first=True)
-            for l in range(n_rnns)]
+            for layer in range(n_rnns)]
         )
 
         # linear classifier

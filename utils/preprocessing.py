@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torchaudio
-from utils.tokenizer import Tokenizer
 
 class Preprocessing():
 
@@ -9,7 +8,6 @@ class Preprocessing():
         self.train_url = "train-clean-100"
         self.test_url = "test-clean"
         self.dataset_path = "./audioset"
-        self.tokenizer = Tokenizer()
 
         # Pipelines
         self.train_agument = nn.Sequential(
@@ -58,7 +56,7 @@ class Preprocessing():
             break
         print("+------------------------------------+")
 
-    def preprocess(self, audioset, split: str):
+    def preprocess(self, audioset, split: str, stride: int, word_model):
         if split == 'train':
             augment_fn = self.train_agument
         elif split == 'test':
@@ -76,12 +74,12 @@ class Preprocessing():
             spec = augment_fn(waveform).squeeze(0).transpose(0,1)
             spectograms.append(spec)
 
-            # Tokenize transcript
-            ids = torch.Tensor(self.tokenizer.text_to_int(transcript.lower()))
+            # Convert text transcript to sequence of ids
+            ids = torch.Tensor(word_model.text_to_int(transcript.lower()))
             indices.append(ids)
 
             # Append audio and text length
-            len_spectograms.append(spec.shape[0]//2)
+            len_spectograms.append(spec.shape[0]//stride)
             len_indices.append(len(ids))
         
         # Zero pad
