@@ -155,9 +155,9 @@ class FFN(nn.Module):
         return x
 
 class PrenormEncoder(nn.Module):
-    def __init__(self, emb_dim, num_heads, drop_rate):
+    def __init__(self, emb_dim, n_heads, drop_rate):
         super(PrenormEncoder, self).__init__()
-        self.mhsa_block = MHSA(emb_dim, num_heads)
+        self.mhsa_block = MHSA(emb_dim, n_heads)
         self.ffn_block = FFN(emb_dim, drop_rate)
 
     def forward(self, x):
