@@ -26,6 +26,9 @@ class WordModel():
         else:
             raise Exception("Error: you must provide a correct word model.")
     
+    def get_name(self):
+        return self.word_model.name
+
     def get_n_class(self):
         return self.word_model.n_class
     

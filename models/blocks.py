@@ -129,6 +129,7 @@ class MHSA(nn.Module):
         skip = x
         x = self.layer_norm(x)
         x, _ = self.attention(x, x, x)
+        
         x += skip
         return x
 
@@ -136,8 +137,11 @@ class FFN(nn.Module):
     def __init__(self, emb_dim, drop_rate):
         super(FFN, self).__init__()
         self.layer_norm = nn.LayerNorm(emb_dim)
+
         self.linear_1 = nn.Linear(emb_dim, emb_dim)
         self.linear_2 = nn.Linear(emb_dim, emb_dim)
+
+        self.relu = nn.ReLU()
         self.dropout = nn.Dropout(drop_rate)
     
     def forward(self, x):
@@ -145,11 +149,10 @@ class FFN(nn.Module):
         x = self.layer_norm(x)
         
         x = self.linear_1(x)
-        x = F.relu(x)
+        x = self.relu(x)
         x = self.dropout(x)
 
         x = self.linear_2(x)
-        x = F.relu(x)
 
         x += skip
         return x

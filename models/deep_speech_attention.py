@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from models.blocks import ResNetInv, PrenormEncoder, Classifier
+from models.blocks import ResNetInv, PrenormEncoder, Classifier, MHSA, FFN
 
 """
 Deep Speech Attention

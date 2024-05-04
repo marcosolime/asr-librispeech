@@ -22,24 +22,24 @@ def compute_cer(hypothesis, reference):
     cer = Levenshtein.distance(hypothesis, reference) / len(reference)
     return cer
 
-def avg_cer(batch_ref, batch_hyp):
+def avg_cer(batch_hyp, batch_ref):
     """
     Calculates CER for each hyp-ref pair, and returns the average
     """
     batch_size = len(batch_ref)
     out = []
     for i in range(batch_size):
-        out.append(compute_cer(batch_ref[i], batch_hyp[i]))
+        out.append(compute_cer(batch_hyp[i], batch_ref[i]))
     
     return sum(out) / batch_size
 
-def avg_wer(batch_ref, batch_hyp):
+def avg_wer(batch_hyp, batch_ref):
     """
     Calculates WER for each hyp-ref pair, and returns the average
     """
     batch_size = len(batch_ref)
     out = []
     for i in range(batch_size):
-        out.append(compute_wer(batch_ref[i], batch_hyp[i]))
+        out.append(compute_wer(batch_hyp[i], batch_ref[i]))
     
     return sum(out) / batch_size
