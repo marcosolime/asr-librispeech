@@ -140,15 +140,16 @@ class Bigram():
         return "".join(text_sentence).replace(self.SPACE, " ")
 
 
-# test
 """
+# test
 ngram = WordModel('unigram')
 original = "my name is elon"
 encoded = ngram.text_to_int(original)
 reconstructed = ngram.int_to_text(encoded)
 
-print('original:', original)
-print('encoded:', encoded)
-print('reconstructed:', reconstructed)
-"""
+#print('original:', original)
+#print('encoded:', encoded)
+#print('reconstructed:', reconstructed)
 
+print(ngram.word_model.id_to_char)
+"""

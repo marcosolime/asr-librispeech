@@ -2,7 +2,7 @@ import torch
 
 class DecoderBase():
 
-    def __init__(self, blank_id=28):
+    def __init__(self, blank_id):
         self.blank_id = blank_id
     
     def decode_prob(self, prob, word_model):
