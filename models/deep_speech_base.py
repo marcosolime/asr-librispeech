@@ -11,12 +11,12 @@ Deep Speech Base
 
 class DeepSpeechBase(nn.Module):
     
-    def __init__(self, n_cnn, n_rnn, rnn_dim, n_features, n_class, stride_time=2, stride_freq=2, drop_rate=0.2):
+    def __init__(self, n_cnn, n_rnn, rnn_dim, n_features, n_class, stride=2, drop_rate=0.2):
         super(DeepSpeechBase, self).__init__()
-        n_features = n_features // stride_freq
+        n_features = n_features // 2
 
         # init conv2d layer
-        self.init_cnn = nn.Conv2d(1, 32, 3, stride=stride_time, padding=1)
+        self.init_cnn = nn.Conv2d(1, 32, 3, stride=(2,stride), padding=1)
 
         # 1st stage: ResNet blocks
         self.stage_1 = nn.Sequential(

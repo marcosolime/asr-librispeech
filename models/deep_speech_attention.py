@@ -12,12 +12,12 @@ Deep Speech Attention
 class DeepSpeechAttention(nn.Module):
 
     def __init__(self, n_cnn, n_enc, n_features, n_class, 
-                 emb_dim=512, n_heads=4, stride_time=2, stride_freq=2, drop_rate=0.2):
+                 emb_dim=512, n_heads=4, stride=2, drop_rate=0.2):
         super(DeepSpeechAttention, self).__init__()
-        n_features = n_features // stride_freq
+        n_features = n_features // 2
 
         # init conv2d layer
-        self.init_cnn = nn.Conv2d(1, 32, 3, stride=stride_time, padding=1)
+        self.init_cnn = nn.Conv2d(1, 32, 3, stride=(2, stride), padding=1)
 
         # 1st stage: ResNet blocks
         self.stage_1 = nn.Sequential(
