@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from models.blocks import LayerNorm, ResNet, ResNetInv, BiGRU, Classifier
+from models.deep_speech.blocks import LayerNorm, ResNet, ResNetInv, BiGRU, Classifier
 
 """
 Deep Speech Base

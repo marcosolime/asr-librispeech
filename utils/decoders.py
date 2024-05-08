@@ -1,6 +1,6 @@
 import torch
 
-class DecoderBase():
+class DecoderGreedy():
 
     def __init__(self, blank_id):
         self.blank_id = blank_id
