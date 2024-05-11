@@ -3,12 +3,13 @@ import torch.nn as nn
 from models.conformer.blocks import Prolog, ConformerMultiheadSelfAttentionModule, ConformerConvolutionModule, ConformerFeedForwardModule, ConvSubsampling
 
 class ConformerBlock(nn.Module):
-    def __init__(self, in_features, num_heads, max_rel_pos):
+    def __init__(self, in_features, num_heads, max_rel_pos, device):
         super(ConformerBlock, self).__init__()
         self.feed_forward_1 = ConformerFeedForwardModule(in_features=in_features)
         self.attention = ConformerMultiheadSelfAttentionModule(emb_dim=in_features,
                                                                num_heads=num_heads, 
-                                                               max_rel_pos=max_rel_pos)
+                                                               max_rel_pos=max_rel_pos,
+                                                               device=device)
         self.convolution = ConformerConvolutionModule(num_features=in_features)
         self.feed_forward_2 = ConformerFeedForwardModule(in_features=in_features)
         self.norm = nn.LayerNorm(normalized_shape=in_features)
@@ -26,13 +27,14 @@ class Conformer(nn.Module):
     def __init__(self,
                  in_features, 
                  encoder_dim,
+                 device,
                  hidden_size=320,
-                 kernel_size=11,
+                 kernel_size=32,
                  stride=2,
                  num_heads=4,
                  max_rel_pos=400,
                  n_class=29,
-                 n_blocks=4):
+                 n_blocks=16):
 
         super(Conformer, self).__init__()
 
@@ -43,7 +45,8 @@ class Conformer(nn.Module):
         self.conformer_stack = nn.Sequential(
             *[ConformerBlock(in_features=encoder_dim,
                              num_heads=num_heads,
-                             max_rel_pos=max_rel_pos)
+                             max_rel_pos=max_rel_pos,
+                             device=device)
               for _ in range(n_blocks)])
         self.lstm = nn.LSTM(input_size=encoder_dim,
                             hidden_size=hidden_size,

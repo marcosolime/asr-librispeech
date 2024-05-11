@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import math
 
 class ConformerMultiheadSelfAttentionModule(nn.Module):
-    def __init__(self, emb_dim, num_heads, max_rel_pos):
+    def __init__(self, emb_dim, num_heads, max_rel_pos, device):
 
         super(ConformerMultiheadSelfAttentionModule, self).__init__()
 
@@ -16,7 +16,8 @@ class ConformerMultiheadSelfAttentionModule(nn.Module):
         self.attention = nn.MultiheadAttention(emb_dim, num_heads, batch_first=True)
         self.dropout = nn.Dropout()
         
-        self.pos_matrix = self.get_positional_matrix()
+        self.device = device
+        self.pos_matrix = self.get_positional_matrix().to(self.device)
 
 
     def get_positional_matrix(self):
