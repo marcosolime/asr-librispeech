@@ -5,6 +5,8 @@
 - Deep Speech Base (ResNetInv + GRUs)
 - Deep Speech Attention (ResNetInv + Encoders)
 - Jasper Base (5x3)
+- Jasper DR (Dense Residual) (5x3)
+- Conformer Small
 
 ## Install dependencies
 
