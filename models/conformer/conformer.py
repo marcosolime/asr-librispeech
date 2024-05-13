@@ -32,7 +32,7 @@ class Conformer(nn.Module):
                  kernel_size=32,
                  stride=2,
                  num_heads=4,
-                 max_rel_pos=400,
+                 max_rel_pos=800,
                  n_class=29,
                  n_blocks=16):
 

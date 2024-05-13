@@ -6,6 +6,8 @@ class Preprocessing():
 
     def __init__(self):
         self.urls = {"train-clean-100",
+                     "train-clean-360",
+                     "train-clean-500",
                      "dev-clean",
                      "dev-other",
                      "test-clean",
@@ -14,9 +16,9 @@ class Preprocessing():
 
         # Pipelines
         self.train_pipe = nn.Sequential(
-            torchaudio.transforms.MelSpectrogram(),
-            torchaudio.transforms.FrequencyMasking(freq_mask_param=32),
-            torchaudio.transforms.TimeMasking(time_mask_param=120))
+            torchaudio.transforms.MelSpectrogram(sample_rate=16000, n_mels=128),
+            torchaudio.transforms.FrequencyMasking(freq_mask_param=15),
+            torchaudio.transforms.TimeMasking(time_mask_param=35))
         self.test_pipe = torchaudio.transforms.MelSpectrogram()
     
     def download(self, split: str, download=False):
@@ -62,10 +64,12 @@ class Preprocessing():
         if split not in self.urls:
             raise Exception(f"Wrong argument: split must be in {self.urls}")
 
-        if split == "train-clean-100":
+        if split[:5] == "train":
             augment_fn = self.train_pipe
         else:
             augment_fn = self.test_pipe
+
+        print(f"Preprocessing {split}...")
 
         spectrograms = []
         indices = []
