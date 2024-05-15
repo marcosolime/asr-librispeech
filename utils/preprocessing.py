@@ -69,8 +69,9 @@ class Preprocessing():
         else:
             augment_fn = self.test_pipe
 
-        print(f"Preprocessing {split}...")
-
+        if stride not in {2, 4}:
+            raise Exception(f"Stride must be either 2 or 4")
+        
         spectrograms = []
         indices = []
         len_spectrograms = []
@@ -86,7 +87,12 @@ class Preprocessing():
             indices.append(ids)
 
             # Append audio and text length
-            len_spectrograms.append(spec.shape[0]//stride)
+            if stride == 2:
+                len_spec = spec.shape[0]//stride
+            else:
+                len_spec = spec.shape[0]//stride - 2
+            
+            len_spectrograms.append(len_spec)
             len_indices.append(len(ids))
         
         # Zero pad
