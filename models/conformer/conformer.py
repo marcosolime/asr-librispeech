@@ -1,18 +1,15 @@
 import torch
 import torch.nn as nn
-from models.conformer.blocks import Prolog, ConformerMultiheadSelfAttentionModule, ConformerConvolutionModule, ConformerFeedForwardModule, ConvSubsampling
+from models.conformer.blocks import Prolog, Epilog, ConformerMHSA, ConformerConv, ConformerFFN, ConvSubsampling
 
 class ConformerBlock(nn.Module):
-    def __init__(self, in_features, num_heads, max_rel_pos, device):
+    def __init__(self, encoder_dim, num_heads, kernel_size, device):
         super(ConformerBlock, self).__init__()
-        self.feed_forward_1 = ConformerFeedForwardModule(in_features=in_features)
-        self.attention = ConformerMultiheadSelfAttentionModule(emb_dim=in_features,
-                                                               num_heads=num_heads, 
-                                                               max_rel_pos=max_rel_pos,
-                                                               device=device)
-        self.convolution = ConformerConvolutionModule(num_features=in_features)
-        self.feed_forward_2 = ConformerFeedForwardModule(in_features=in_features)
-        self.norm = nn.LayerNorm(normalized_shape=in_features)
+        self.feed_forward_1 = ConformerFFN(num_features=encoder_dim)
+        self.attention = ConformerMHSA(num_features=encoder_dim, device=device, num_heads=num_heads)
+        self.convolution = ConformerConv(num_features=encoder_dim, kernel_size=kernel_size)
+        self.feed_forward_2 = ConformerFFN(num_features=encoder_dim)
+        self.norm = nn.LayerNorm(normalized_shape=encoder_dim)
     
     def forward(self, x):
         x = self.feed_forward_1(x)
@@ -25,42 +22,35 @@ class ConformerBlock(nn.Module):
 
 class Conformer(nn.Module):
     def __init__(self,
-                 in_features, 
+                 in_features,
                  encoder_dim,
-                 device,
-                 hidden_size=320,
-                 kernel_size=32,
-                 stride=2,
-                 num_heads=4,
-                 max_rel_pos=800,
-                 n_class=29,
-                 n_blocks=16):
+                 num_heads,
+                 kernel_size,
+                 hidden_size,
+                 n_class,
+                 n_blocks,
+                 device):
 
         super(Conformer, self).__init__()
 
-        self.prolog = Prolog(in_features=in_features,
-                             out_features=encoder_dim,
-                             kernel_size=kernel_size,
-                             stride=stride)
+        self.prolog = Prolog(in_features=in_features, encoder_dim=encoder_dim)
         self.conformer_stack = nn.Sequential(
-            *[ConformerBlock(in_features=encoder_dim,
+            *[ConformerBlock(encoder_dim=encoder_dim,
                              num_heads=num_heads,
-                             max_rel_pos=max_rel_pos,
+                             kernel_size=kernel_size,
                              device=device)
               for _ in range(n_blocks)])
-        self.lstm = nn.LSTM(input_size=encoder_dim,
-                            hidden_size=hidden_size,
-                            num_layers=1,
-                            batch_first=True)
-        self.scoring = nn.Linear(in_features=hidden_size,
-                                 out_features=n_class)
+        self.epilog = Epilog(encoder_dim=encoder_dim, hidden_size=hidden_size, n_class=n_class)
 
-    def forward(self,x):
+    def forward(self, x):
+        """
+        Input:  [batch_size, 1, seq_len, num_features]
+        Output: [batch_size, seq_len, n_classes]
+        """
+        x = x.transpose(2, 3).contiguous()
+
         x = self.prolog(x)
-        x = x.transpose(1, 2).contiguous() # [batch_size, seq_len, num_features]
-
         x = self.conformer_stack(x)
-        x, _ = self.lstm(x)
-        x = self.scoring(x)
+        x = self.epilog(x)
 
         return x
