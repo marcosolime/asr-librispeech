@@ -17,7 +17,11 @@ class Jasper(nn.Module):
         self.decoder = Decoder()
     
     def forward(self, x):
+        x = x.squeeze()
+
         x = self.prolog(x)
         x = self.encoder(x)
         x = self.decoder(x)
+        
+        x = x.transpose(1, 2).contiguous()
         return x

@@ -19,7 +19,7 @@ class InBlock(nn.Module):
                               stride=stride,
                               padding=padding,
                               dilation=dilation)
-        self.norm = nn.BatchNorm1d(out_channels)
+        self.norm = nn.BatchNorm1d(num_features=out_channels)
         self.relu = nn.ReLU()
         self.drop = nn.Dropout(p=drop_rate)
 
@@ -52,9 +52,10 @@ class OutBlock(nn.Module):
               for i in range(n_blocks-1)])
         
         self.skip = nn.Sequential(
-            nn.Conv1d(in_channels, out_channels, 1),
-            nn.BatchNorm1d(out_channels)
-        )
+            nn.Conv1d(in_channels=in_channels, 
+                      out_channels=out_channels,
+                      kernel_size=1),
+            nn.BatchNorm1d(num_features=out_channels))
 
         # last inner block
         self.conv = nn.Conv1d(in_channels=out_channels,
@@ -67,7 +68,7 @@ class OutBlock(nn.Module):
         self.dropout = nn.Dropout(p=drop_rate)
     
     def forward(self, x):
-        skip = self.skip(x)
+        res = self.skip(x)
 
         # 1..n_blocks-1
         x = self.in_blocks(x)
@@ -77,7 +78,7 @@ class OutBlock(nn.Module):
         x = self.norm(x)
         
         # residual
-        x += skip
+        x += res
         x = self.relu(x)
         x = self.dropout(x)
 
@@ -282,8 +283,7 @@ class Decoder(nn.Module):
                     drop_rate=0.4),
             nn.Conv1d(in_channels=1024,
                       out_channels=self.vocab_size,
-                      kernel_size=1)
-        )
+                      kernel_size=1))
     
     def forward(self, x):
         x = self.epilog(x)
