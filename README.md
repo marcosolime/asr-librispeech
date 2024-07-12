@@ -1,18 +1,33 @@
 # Automatic Speech Recognition with Custom Models
 
-## Overview
-In this repository, we build, train, and evaluate several speech recognition models. The task of Automatic Speech Recognition (ASR) consists of automatically generating a text transcription starting from a raw speech audio file. To tackle this task, we either build and train deep neural models from scratch, or import pre-trained model and fine-tune them on small labelled dataset. Regarding the former, we design our models taking inspiration from SoTA speech recognition models, i.e. Deep Speech 2, Conformer, Jasper. Regarding the latter, we import Wav2Vec2 pre-trained model from Hugging Face Hub and fine-tune it on a fraction of LIBRISPEECH clean slip and FLEURS dataset.
+In this work, we build, train, and evaluate several speech recognition models. The task of Automatic Speech Recognition (ASR) consists of automatically generating a text transcription starting from a raw speech audio file. To tackle this task, we either build and train deep neural models from scratch, or import pre-trained model and fine-tune them on small labelled dataset. 
+
+This project was made for the NLP exam of the Master's Degree in Artificial Intelligence, Università di Bologna.<br>
+You can read our <a href="ASR_presentation.pptx">presentation</a> and <a href="ASR_report.pdf">paper report</a> to get more detailed information.
+
+### Contributors:
+- Marco Solime
+- Alessandro Folloni
+- Daniele Napolitano
+- Gabriele Fossi
+  
+## Our Custom Models
+- **Deep Speech Base** (ResNetInv + GRUs)
+- **Deep Speech Attention** (ResNetInv + Encoders)
+- **Jasper Base** (5x3)
+- **Jasper DR** (Dense Residual) (5x3)
+- **Conformer Small**
+- **Wav2Vec2 Base** (pre-trained from Hugging Face, then fine-tuned on a fraction of LIBRISPEECH and FLEURS datasets)
 
 ## Results
-We evaluate our models on the LibriSpeech benchmark, and provide results both in Word Error Rate (WER) and Character Error Rate (CER). Despite having limited hardware, we are able to achieve decent performances compared to SoTA models.
+We evaluate our models on the LibriSpeech benchmark, and provide results both in Word Error Rate (WER) and Character Error Rate (CER). We did not implement a language model to correct speling mistakes. 
+Despite this and training with limited hardware, we are able to achieve decent performances compared to SoTA models.<br>
+The table below shows our results (top three rows) compared to the baseline results, taken from the original papers, in **Word Error Rate (WER)** metrics: <br>
+<img src="https://github.com/marcosolime/asr-librispeech/blob/main/results_table.png" width=600>
 
-## Our Custom Models
-- Deep Speech Base (ResNetInv + GRUs)
-- Deep Speech Attention (ResNetInv + Encoders)
-- Jasper Base (5x3)
-- Jasper DR (Dense Residual) (5x3)
-- Conformer Small
-- Wav2Vec2 Base (pre-trained from Hugging Face)
+
+
+
 
 ## Install dependencies
 
