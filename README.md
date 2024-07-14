@@ -3,6 +3,7 @@
 In this work, we build, train, and evaluate several speech recognition models. The task of Automatic Speech Recognition (ASR) consists of automatically generating a text transcription starting from a raw speech audio file. To tackle this task, we either build and train deep neural models from scratch, or import pre-trained model and fine-tune them on small labelled dataset. 
 
 This project was made for the NLP exam of the Master's Degree in Artificial Intelligence, Università di Bologna.<br>
+
 You can read our <a href="ASR_presentation.pptx">presentation</a> and <a href="ASR_report.pdf">paper report</a> to get more detailed information.
 
 ### Contributors:
